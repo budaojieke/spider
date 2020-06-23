@@ -5,18 +5,19 @@ import urllib.request
 from bs4 import BeautifulSoup
 import time
 import socket
+from urllib.parse import quote
+import string
 
 socket.setdefaulttimeout(2)
 path = 'E:/source/sky/'
 if not os.path.exists(path):
     os.makedirs(path)
 
-os.makedirs('./image/animal/', exist_ok=True)
 keyword = input('输入关键字：')
 SEARCH_URL = 'http://soso.nipic.com/?q={}&g=0&or=0&y=48'.format(keyword)
-id = 12000000
+SEARCH_URL = quote(SEARCH_URL, safe = string.printable)
 pages = int(input('输入搜索页数：'))
-for page in range(1201, pages + 1):
+for page in range(1, pages + 1):
     seach_url = SEARCH_URL + '&page={}'.format(page)
     try:
         req = urllib.request.Request(seach_url)
@@ -44,22 +45,14 @@ for page in range(1201, pages + 1):
         except:
             pass
         for j in soup1.find_all('img', class_='works-img'):
-            img = '{}.jpg'.format(id)
+            img_name  = j['src'].split('/')[-1]
             try:
-                urllib.request.urlretrieve(j['src'], path + img)
-                id = id + 1
-                print('page:', page , j['src'], '--->', img)
+                urllib.request.urlretrieve(j['src'], path + img_name)
+                print('page:', page , j['src'], '--->', img_name)
             except:
                 print('fail download')
 
         time.sleep(0.2)
-    page += 1
-
-# flowersoup = soup.select("#main .context .row .item")
 
 
-##for k in flowersoup:
-#    print(k['href'])
-#    urllib.request.urlretrieve(IMAGE_URL,'./image/flow{id}.jpg'.format(id = id))
-#    id = id+1img
-#
+
